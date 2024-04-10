@@ -10,58 +10,21 @@
 		<view class="panel-list">
 			<view class="panel">
 				<view class="panel-body">
-					<view class="panel-item">
+					<view class="panel-item" style="border-right: 1rpx sold darkgrey;">
 						<text>8</text>
-						<text>收藏的店铺</text>
+						<text>想看的</text>
+					</view>
+					<view class="panel-item">
+						<text>|</text>
 					</view>
 					<view class="panel-item">
 						<text>14</text>
-						<text>收藏的商品</text>
-					</view>
-					<view class="panel-item">
-						<text>18</text>
-						<text>关注的商品</text>
-					</view>
-					<view class="panel-item">
-						<text>84</text>
-						<text>足迹</text>
+						<text>看过的</text>
 					</view>
 				</view>
 			</view>
 			
 			<view class="panel">
-				<view class="panel-title">
-					我的订单
-				</view>
-				<view class="panel-body">
-					<view class="panel-item">
-						<img src="../../static/cart.png" alt="" class='icon'>
-						<text>待付款</text>
-					</view>
-					<view class="panel-item">
-						<img src="../../static/cart.png" alt="" class='icon'>
-						<text>待收货</text>
-					</view>
-					<view class="panel-item">
-						<img src="../../static/cart.png" alt="" class='icon'>
-						<text>退款退货</text>
-					</view>
-					<view class="panel-item">
-						<img src="../../static/cart.png" alt="" class='icon'>
-						<text>全部订单</text>
-					</view>
-				</view>
-			</view>
-			
-			<view class="panel">
-				<view class="panel-list-item">
-					<text>收货地址</text>
-					<uni-icons type="arrowright" size="15"></uni-icons>
-				</view>
-				<view class="panel-list-item">
-					<text>联系客服</text>
-					<uni-icons type="arrowright" size="15"></uni-icons>
-				</view>
 				<view class="panel-list-item" @click="logOut">
 					<text>退出登录</text>
 					<uni-icons type="arrowright" size="15"></uni-icons>
