@@ -13,7 +13,7 @@
             "path" : "pages/cate/cate",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "分类",
+                "navigationBarTitleText": "榜单",
                 "enablePullDownRefresh": false
             }
             
@@ -22,7 +22,7 @@
             "path" : "pages/cart/cart",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "购物车",
+                "navigationBarTitleText": "想看",
                 "enablePullDownRefresh": false
             }
             
@@ -43,36 +43,33 @@
 			"pages": [{
                     "path" : "goods_details/goods_details",
                     "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
+						{
+							"navigationBarTitleText": "",
+							"enablePullDownRefresh": false
+						}
                 }
                 ,{
                     "path" : "goods_list/goods_list",
                     "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": true,
-					"onReachBottomDistance":150
-                }
-                
+						{
+							"navigationBarTitleText": "",
+							"enablePullDownRefresh": true,
+							"onReachBottomDistance":150
+						}
                 }
                 ,{
                     "path" : "search/search",
                     "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
+						{
+							"navigationBarTitleText": "搜索",
+							"enablePullDownRefresh": false
+						}
                 }
             ]
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "#fff",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#ffa115",
 		"backgroundColor": "#000"
@@ -88,15 +85,9 @@
 			},
 			{
 				"pagePath": "pages/cate/cate",
-				"text": "分类",
+				"text": "榜单",
 				"iconPath": "static/cate1.png",
 				"selectedIconPath": "static/cate.png"
-			},
-			{
-				"pagePath": "pages/cart/cart",
-				"text": "购物车",
-				"iconPath": "static/cart1.png",
-				"selectedIconPath": "static/cart.png"
 			},
 			{
 				"pagePath": "pages/my/my",

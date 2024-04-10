@@ -31,8 +31,14 @@
 				keyWord:'',
 				timer:null,
 				searchResults:[],
-				historyList:['a','app','apple']
+				historyList:[]
 			};
+		},
+		onLoad() {
+			let str=uni.getStorageSync('kw')??''
+			if(str){
+				this.historyList=str.split(',')
+			}
 		},
 		methods:{
 			search(){
@@ -49,7 +55,7 @@
 				if(!this.keyWord) return this.searchResults=[]
 				
 				if(!this.historyList.includes(this.keyWord)) this.historyList.unshift(this.keyWord)
-				uni.setStorageSync('kw',JSON.stringify(this.historyList))
+				uni.setStorageSync('kw',this.historyList.toString())
 				let {data:res} = await uni.$http.get(`/goods/qsearch?query=${this.keyWord}`)
 				if(res.meta.status!=200)return uni.$showMsg()
 				this.searchResults=res.message?res.message:[]
@@ -61,7 +67,7 @@
 			},
 			clean(){
 				this.historyList=[]
-				uni.setStorageSync('kw','[]')
+				uni.setStorageSync('kw','')
 			},
 			gotoGoodsDetail(item){
 				uni.navigateTo({

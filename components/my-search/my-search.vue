@@ -13,7 +13,7 @@
 		props:{
 			bgColor:{
 				type:String,
-				default:"#c00000"
+				default:"#ffa115"
 			},
 			radius:{
 				type:Number,
@@ -36,7 +36,7 @@
 <style lang="scss">
 .my-search-container{
 	height: 50px;
-	// background-color: #c00000;
+	// background-color: #ffa115;
 	display: flex;
 	align-items: center;
 	padding:0 10px;

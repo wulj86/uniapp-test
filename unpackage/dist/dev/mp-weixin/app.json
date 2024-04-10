@@ -32,15 +32,9 @@
       },
       {
         "pagePath": "pages/cate/cate",
-        "text": "分类",
+        "text": "榜单",
         "iconPath": "static/cate1.png",
         "selectedIconPath": "static/cate.png"
-      },
-      {
-        "pagePath": "pages/cart/cart",
-        "text": "购物车",
-        "iconPath": "static/cart1.png",
-        "selectedIconPath": "static/cart.png"
       },
       {
         "pagePath": "pages/my/my",

@@ -1,10 +1,7 @@
 <template>
 	<view>
-		<view class="goods-list">
-			<navigator :url="'../goods_details/goods_details?goods_id='+goods.goods_id" v-for="(goods,i) in goodsList" :key='i'>
-				<my-goods :goods="goods"></my-goods>
-			</navigator>
-		</view>
+		<uni-icons type="up" size="40" class="upicon" color="#ffa115" @click="goToTop"></uni-icons>
+		<my-goods :goods="goodsList"></my-goods>
 	</view>
 </template>
 
@@ -16,11 +13,11 @@
 					query:'',
 					cid:'',
 					pagenum:1,
-					pagesize:10,
+					pagesize:30,
 				},
 				goodsList:[],
-				total:0,
-				isLoading:false
+				isLoading:false,
+				total:0
 			};
 		},
 		onLoad(options){
@@ -36,10 +33,9 @@
 		},
 		onPullDownRefresh(){
 			this.queryObj.pagenum=1
-			this.total=0
 			this.isLoading=false
 			this.goodsList=[]
-			
+			this.total=0
 			this.getGoodsList(()=>uni.stopPullDownRefresh())
 		},
 		methods:{
@@ -47,17 +43,28 @@
 				this.isLoading=true
 				let {data:res} = await uni.$http.get(`/goods/search`,this.queryObj)
 				if(res.meta.status!=200)return uni.$showMsg()
+				res.message.goods.forEach(e=>e.image_src=e.goods_big_logo)
 				this.goodsList=[...this.goodsList,...res.message.goods]
-				this.total=res.message.total
 				this.isLoading=false
+				this.total=res.message.total
 				cb && cb()
 			},
-			
+			goToTop() {
+			  uni.pageScrollTo({
+			    scrollTop: 0,
+			    duration: 300 // 动画时长，默认300ms
+			  });
+			}
 		}
 	}
 </script>
 
 <style lang="scss">
-
+.upicon{
+	position: fixed;
+	bottom: 20rpx;
+	right: 10rpx;
+	z-index: 999;
+}
 
 </style>
