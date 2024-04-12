@@ -10,17 +10,21 @@
 		<view class="panel-list">
 			<view class="panel">
 				<view class="panel-body">
-					<view class="panel-item" style="border-right: 1rpx sold darkgrey;">
-						<text>8</text>
-						<text>想看的</text>
-					</view>
+					<navigator  url="/subpkg/goods_list/goods_list?type=like" class="colitem">
+						<view class="panel-item">
+							<text>8</text>
+							<text>想看的</text>
+						</view>
+					</navigator>
 					<view class="panel-item">
 						<text>|</text>
 					</view>
-					<view class="panel-item">
-						<text>14</text>
-						<text>看过的</text>
-					</view>
+					<navigator  url="/subpkg/goods_list/goods_list?type=read" class="colitem">
+						<view class="panel-item">
+							<text>14</text>
+							<text>看过的</text>
+						</view>
+					</navigator>
 				</view>
 			</view>
 			
@@ -98,6 +102,9 @@
 			.panel-body{
 				display: flex;
 				justify-content: space-around;
+				.colitem{
+					width: 40%;
+				}
 				.panel-item{
 					display: flex;
 					flex-direction: column;

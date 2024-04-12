@@ -4,16 +4,9 @@
 			<my-search @myclick='gotoSearch'></my-search>
 		</view>
 		<view class="floor-list">
-			<view class="floor-item" v-for='(item ,i) in floorList' :key="i">
-				<uni-section :title="'分组'+i" type="line" style="position: relative;">
-					<view class="unilink" @click="navClickHandler(item)">查看更多</view>
-					<!-- <view class="floor-img-box">
-						 <view class="right-img-box">
-							<navigator class="right-img-item" v-for="(item2,i2) in item.product_list" :key="i2" :url='item2.url'>
-								<img :src="item2.image_src" mode='widthFix' style="width:100rpx;height:160rpx">
-							</navigator>
-						 </view>
-					</view> -->
+			<view class="floor-item" v-for='(item ,i) in floorList' :key="i"  style="position: relative;">
+				<view class="unilink" @click="navClickHandler(item)">查看更多</view>
+				<uni-section :title="'分组'+i" type="line">
 					<my-goods :goods="item.product_list"></my-goods>
 				</uni-section>
 			</view>
@@ -69,6 +62,7 @@
 <style lang="scss">
 	.unilink{
 		position: absolute;
+		z-index: 999;
 		right:10px;
 		top:10px;
 		color:#ffa115

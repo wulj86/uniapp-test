@@ -1,168 +1,144 @@
 <template>
-	<view class="goods-detail-container">
-		<swiper :indicator-dots="true" :circular="true" :autoplay="true" :interval="3000" :duration="1000">
-			<swiper-item v-for='(item,i) in goods_info.pics' :key='i'>
-				<image :src="item.pics_big" @click="preview(i)"></image>
-			</swiper-item>
-		</swiper>
-		<view class="goods-info-box">
-			<view class="price">
-				{{goods_info.goods_price}}
-			</view>
-			<view class="goods-info-body">
-				<view class="goods-name">
-					{{goods_info.goods_name}}
+	<view class="container">
+		<view class="top">
+			<img :src="movie.img_src" alt="图片" class="top-left">
+			<view class="top-right">
+				<view style="font-size: 38rpx;font-weight: 400;letter-spacing: 4rpx;">{{movie.title}}</view>
+				<view style="color: #ff5722;">导演：{{movie.director}}</view>
+				<view style="color: #9E9E9E;">
+					{{movie.movieType.join('/')}}——{{movie.address.join('/')}}
 				</view>
-				<view class="favi">
-					<uni-icons type='star' size="18" color="gray"></uni-icons>
-					<text>收藏</text>
+				<view class="bottom">
+					<view class="favi">
+						<uni-icons type='star' size="18" color="gray" v-if='!movie.collected'></uni-icons>
+						<uni-icons type='star-filled' size="18" color="gray" v-else></uni-icons>
+						<text style="font-weight: bold;margin-left:10rpx;">想看</text>
+					</view>
+					<view class="favi">
+						<uni-icons type='color' size="18" color="gray" v-if='!movie.read'></uni-icons>
+						<uni-icons type='color-filled' size="18" color="gray" v-else></uni-icons>
+						<text style="font-weight: bold;margin-left:10rpx;">看过</text>
+					</view>
 				</view>
-			</view>
-			<view class="yf">
-				快递:免运费}
 			</view>
 		</view>
 		
-		<rich-text :nodes="goods_info.goods_introduce"></rich-text>
-		 <view class="goods-nav">
-		 	<uni-goods-nav :fill="true"  :options="options" :buttonGroup="buttonGroup"  @click="onClick" @buttonClick="buttonClick" />
-		 </view>
-	
+		<uni-card margin="15" shadow="3px 0px 3px 1px rgba(0, 0, 0, 0.08)" >
+			<view class="uni-body">
+				<view>豆瓣评分</view>
+				<view class="score">
+					<view>
+						<uni-icons type='star' size="18" color="orange"></uni-icons>
+						<uni-icons type='star' size="18" color="orange"></uni-icons>
+						<uni-icons type='star' size="18" color="orange"></uni-icons>
+						<uni-icons type='star' size="18" color="grey"></uni-icons>
+						<uni-icons type='star' size="18" color="grey"></uni-icons>
+					</view>
+					<view style="font-size: 44rpx;font-weight: bold;">{{movie.score}}</view>
+				</view>
+			</view>
+		</uni-card>
+		<view>
+			<view class="group">简介</view>
+			<rich-text :nodes="movie.movieIntroduction"></rich-text>
+		</view>
+		<view>
+			<view class="group">演员</view>
+		</view>
+		
 	</view>
 </template>
 
 <script>
-	import { mapState,mapMutations,mapGetters } from 'vuex'
+// 	import { mapState,mapMutations,mapGetters } from 'vuex'
 	export default {
-		computed:{
-			...mapState('m_cart',[]),
-			...mapGetters('m_cart',['total'])
-		},
-		watch:{
-			total:{
-				handler(newVal){
-					console.log(newVal)
-					let findResult = this.options.find(x=>x.text==='购物车')
-					if(findResult){
-						findResult.info=newVal
-					}
-					console.log(this.options)
-				},
-				immediate:true
-			}
-		},
+		// computed:{
+		// 	...mapState('m_cart',[]),
+		// 	...mapGetters('m_cart',['total'])
+		// },
 		data() {
 			return {
-				goods_info:[],
-				options:[{
-					icon:'shop',
-					text:'店铺'
-				},{
-					icon:'cart',
-					text:'购物车',
-					info:0
-				}],
-				buttonGroup:[{
-					text:'加入购物车',
-					backgroundColor:'#ff0000',
-					color:'#fff'
-				},{
-					text:'立即购买',
-					backgroundColor:'#ffa200',
-					color:'#fff'
-				}]
-			};
+					movie:{
+						img_src:'/static/jomoo.png',
+						title:'杀死比尔分公司分公司',//电影名称
+						director:'胜多负少',//导演
+						movieType:['动作','喜剧'],
+						address:['中国大陆','中国香港'],
+						score:'6.0',
+						actor:['赵丽颖','林更新','今晨','严宽'],
+						collected:true,//想看
+						read:false,//看过
+						movieIntroduction:'更丰富付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付付    付付付付付规划的规划基督教',//电影介绍
+					},
+					comments:[
+						{
+							author:'水电费',
+							content:'分隔符过多所所所所所所所所所所所所所所所所所付噶奥奥噶多付噶付'
+						},
+						{
+							author:'水电费',
+							content:'分隔符过多所所所所所所所所所所所所所所所所所付噶奥奥噶多付噶付'
+						},
+						{
+							author:'水电费',
+							content:'分隔符过多所所所所所所所所所所所所所所所所所付噶奥奥噶多付噶付'
+						},
+					]
+				}
 		},
 		onLoad(options){
-			const goods_id=options.goods_id
-			this.getGoodsDetail(goods_id)
+			
 		},
 		methods:{
-			...mapMutations('m_cart',['addToCart']),
-			async getGoodsDetail(goods_id){
-				let {data:res} = await uni.$http.get('/goods/detail',{goods_id})
-				if(res.meta.status!=200)return uni.$showMsg()
-				res.message.goods_introduce=res.message.goods_introduce.replace(/<img /g,'<img style="display:block"').repeat(/.webp/g,'.jpg')
-				this.goods_info=res.message
-			},
-			preview(i){
-				uni.previewImage({
-					current:i,
-					urls:this.goods_info.pics.map(x=>x.pics_big)
-				})
-			},
-			onClick (e) {
-				if(e.content.text=='购物车'){
-					uni.switchTab({
-						url:'../../pages/cart/cart'
-					})
-				}
-			  },
-			  buttonClick (e) {
-				console.log(e)
-				if(e.content.text=='加入购物车'){
-					const goods={
-						goods_id:this.goods_info.goods_id,
-						goods_name:this.goods_info.goods_name,
-						goods_price:this.goods_info.goods_price,
-						goods_count:1,
-						goods_small_logo:this.goods_info.goods_small_logo,
-						goods_state:true
-					}
-					this.addToCart(goods)
-				}
-			  }
+			// ...mapMutations('m_cart',['addToCart']),
+			
 		}
 	}
 </script>
 
 <style lang="scss">
-	swiper{
-		height: 750rpx;
-		image{
-			width: 100%;
-			height: 100%;
-		}
+	page{
+		background-color: RGB(245,245,245);
 	}
-	.goods-info-box{
-		padding: 10px;
-		padding-right: 0;
-		.price{
-			color: #c00000;
-			font-size: 18px;
-			margin: 10px 0;
-		}
-		.goods-info-body{
+	.container{
+		padding: 20rpx;
+		.top{
 			display: flex;
-			justify-content: space-between;
-			.goods-name{
-				font-size: 13px;
-				margin-right: 10px;
+			margin-bottom: 20rpx;
+			.top-left{
+				width: 200rpx;
+				height: 300rpx;
+				box-shadow:0px 0px 10px 6px rgba(0, 0, 0, 0.15);
+				border-radius: 8rpx;
 			}
-			.favi{
-				width: 120px;
-				font-size: 12px;
+			.top-right{
+				flex: 1;
 				display: flex;
 				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				border-left:1px solid #efefef;
-				color: gray;
+				padding-left: 40rpx;
+				justify-content: space-around;
+				.bottom{
+					display: flex;
+					justify-content: space-around;
+					.favi {
+						    justify-content: center;
+						    width: 150rpx;
+						    height: 70rpx;
+						    background-color: white;
+						    display: flex;
+						    align-items: center;
+					}
+				}
 			}
 		}
-		.yf{
-			font-size: 12px;
-			color: gray;
-			margin: 10px 0;
+	.uni-body{
+			// background-color: white;
+			height: 140rpx;
+			.score{
+				display: flex;
+				align-items: center;
+				flex-direction: column;
+			}
 		}
-	}
-	.goods-nav{
-		position: fixed;
-		bottom:0;
-		left:0;
-		width: 100%;
-	}
-	.goods-detail-container{
-		padding-bottom: 50px;
 	}
 </style>

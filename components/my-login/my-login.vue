@@ -63,7 +63,7 @@
 					rawData:e.rawData,
 					signature:e.signature,
 				}
-				const {data:loginResult} =await uni.$http.post('/users/wxlogin',query)
+				// const {data:loginResult} =await uni.$http.post('/users/wxlogin',query)
 				// if(loginResult.meta.status!=200) return uni.$showMsg('登录失败')
 				uni.$showMsg('登录成功')
 				this.updateToken('hhhhhhhhhh')
