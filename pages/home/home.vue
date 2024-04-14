@@ -24,7 +24,15 @@
 			};
 		},
 		onLoad(options){
-			this.getFloorList()
+			// this.getFloorList()
+			// uni.$http.post('/movie/movieComments/query?movieId=1')
+			uni.request({
+				url:'/movie/movieComments/query?movieId=1',
+				method:'POST',
+				success() {
+					
+				}
+			})
 		},
 		methods:{
 			gotoSearch(){

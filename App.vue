@@ -14,4 +14,7 @@
 
 <style>
 	/*每个页面公共css */
+	view,text{
+		font-size: 26rpx;
+	}
 </style>

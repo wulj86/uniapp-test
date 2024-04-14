@@ -29,7 +29,7 @@
 	export default {
 		data() {
 			return {
-				swiperList:[
+				swiperList:[//轮播图
 					{
 						goods_id:'1',
 						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor01_2@2x.png'
@@ -43,7 +43,7 @@
 						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor03_2@2x.png'
 					},
 				],
-				cateList:[
+				cateList:[//榜单分类
 					{
 						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor01_2@2x.png',
 						goodsList:[

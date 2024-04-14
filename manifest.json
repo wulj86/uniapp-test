@@ -59,10 +59,10 @@
         },
         "usingComponents" : true,
         "permission" : {},
-		"requiredPrivateInfos":[
-			// 'getLocation',
-			"chooseAddress"
-		]
+        "requiredPrivateInfos" : [
+            // 'getLocation',
+            "chooseAddress"
+        ]
     },
     "mp-alipay" : {
         "usingComponents" : true
@@ -76,5 +76,22 @@
     "uniStatistics" : {
         "enable" : false
     },
-    "vueVersion" : "2"
+    "vueVersion" : "2",
+    "h5" : {
+		"title":"H5",
+        "devServer" : {
+            "port" : 8080,
+			"https":false,
+            "disableHostCheck" : true,
+            "proxy" : {
+                "/movie" : {
+                    "target" : "http://127.0.0.1:18080",
+                    "changeOrigin" : true,
+                    "pathRewrite" : {
+                        "^/movie" : ""
+                    }
+                }
+            }
+        }
+    }
 }
