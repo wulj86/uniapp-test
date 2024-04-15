@@ -15,7 +15,10 @@ app.$mount()
 import { $http } from '@escook/request-miniprogram'
 uni.$http = $http
 // https://www.showdoc.com.cn/128719739414963/2513235043485226  本项目所有接口地址
-// $http.baseUrl='https://api-hmugo-web.itheima.net/api/public/v1'  //请求根路径
+//小程序不存在跨域问题，所以要请求完整路径
+// #ifndef H5
+$http.baseUrl='https://api-hmugo-web.itheima.net/api/public'
+// #endif
 	
 $http.beforeRequest=(options)=>{
 	uni.showLoading({

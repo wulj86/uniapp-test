@@ -1,4 +1,9 @@
 <template>
+	<page-meta>
+	    <navigation-bar
+	      :title="movie.title"
+	    />
+	  </page-meta>
 	<view class="container">
 		<view class="top">
 			<img :src="movie.img_src" alt="图片" class="top-left">
@@ -48,7 +53,7 @@
 			<view  v-for="(item,i) in comments" :key='i' style="margin-bottom: 36rpx;">
 				<view class="comments">
 					<view class="left">
-						<img src="/static/cart.png" alt="头像">
+						<img src="/static/cart.png" alt="头像" class="avatar">
 						<text>{{item.account}}</text>
 					</view>
 					<text style="color:#9E9E9E">{{item.date}}</text>
@@ -218,7 +223,7 @@
 		.left{
 			display: flex;
 			align-items: center;
-			image{
+			.avatar{
 				width: 36rpx;
 				height: 36rpx;
 				border-radius: 40rpx;

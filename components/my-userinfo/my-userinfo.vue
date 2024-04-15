@@ -10,7 +10,7 @@
 		<view class="panel-list">
 			<view class="panel">
 				<view class="panel-body">
-					<navigator  url="/subpkg/goods_list/goods_list?type=like" class="colitem">
+					<navigator  url="/subpkg/goods_list/goods_list?pageType=like" class="colitem">
 						<view class="panel-item">
 							<text>8</text>
 							<text>想看的</text>
@@ -19,7 +19,7 @@
 					<view class="panel-item">
 						<text>|</text>
 					</view>
-					<navigator  url="/subpkg/goods_list/goods_list?type=read" class="colitem">
+					<navigator  url="/subpkg/goods_list/goods_list?pageType=read" class="colitem">
 						<view class="panel-item">
 							<text>14</text>
 							<text>看过的</text>

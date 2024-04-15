@@ -78,10 +78,9 @@
     },
     "vueVersion" : "2",
     "h5" : {
-		"title":"H5",
+        "title" : "H5",
         "devServer" : {
             "port" : 8080,
-			"https":false,
             "disableHostCheck" : true,
             "proxy" : {
                 "/movie" : {
@@ -90,7 +89,11 @@
                     "pathRewrite" : {
                         "^/movie" : ""
                     }
-                }
+                },
+				"/v1" : {
+				    "target" : "https://api-hmugo-web.itheima.net/api/public",
+				    "changeOrigin" : true
+				}
             }
         }
     }

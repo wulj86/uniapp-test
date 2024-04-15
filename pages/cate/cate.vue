@@ -9,10 +9,10 @@
 			</swiper-item>
 		</swiper>
 		<view class="category">
-			<navigator  :url="'/subpkg/goods_list/goods_list'" class="navigator" v-for="(cate,i) in cateList" :key="i">
+			<navigator  :url="'/subpkg/goods_list/goods_list?pageType=cate&navbarTitle='+cate.movieType" class="navigator" v-for="(cate,i) in cateList" :key="i">
 				<uni-card margin="15" shadow="3px 0px 3px 1px rgba(0, 0, 0, 0.08)" >
 					<view class="uni-body">
-						<img :src="cate.img_src" class="left">
+						<img :src="cate.img_src" class="swiperImg">
 						<view class="right">
 							<view v-for="(goods,i2) in cate.goodsList" :key="i2" class="item">
 								<view class="name">{{i2+1}}、{{goods.movieName}}分</view><text class="score">{{goods.movieScore}}</text>
@@ -46,6 +46,7 @@
 				cateList:[//榜单分类
 					{
 						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor01_2@2x.png',
+						navbarTitle:'top100',
 						goodsList:[
 							{
 								movieScore:'5.3',
@@ -63,6 +64,7 @@
 					},
 					{
 						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor02_2@2x.png',
+						navbarTitle:'华语口碑高分榜',
 						goodsList:[
 							{
 								movieScore:'5.3',
@@ -80,6 +82,7 @@
 					},
 					{
 						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor03_2@2x.png',
+						navbarTitle:'全球口碑高分榜',
 						goodsList:[
 							{
 								movieScore:'5.3',
@@ -127,7 +130,7 @@
 			.uni-body{
 				display: flex;
 				height: 160rpx;
-				image.left{
+				.swiperImg{
 					width: 30%;
 					height: 100%;
 				}

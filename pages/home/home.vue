@@ -24,11 +24,12 @@
 			};
 		},
 		onLoad(options){
-			// this.getFloorList()
-			// uni.$http.post('/movie/movieComments/query?movieId=1')
+			let url='/movie/movieComments/query?movieId=1'
+			this.getFloorList()
+			return
 			uni.request({
-				url:'/movie/movieComments/query?movieId=1',
-				method:'POST',
+				url,
+				method:'GET',
 				success() {
 					
 				}
@@ -41,7 +42,7 @@
 				})
 			},
 			async getFloorList(){
-				let {data:res} = await uni.$http.get('/home/floordata')
+				let {data:res} = await uni.$http.get('/v1/home/floordata')
 				if(res.meta.status!=200)return uni.$showMsg()
 					
 				res.message.forEach(floor=>{
@@ -53,15 +54,8 @@
 			},
 			navClickHandler(item){
 				uni.navigateTo({
-					url:'/subpkg/goods_list/goods_list'
+					url:'/subpkg/goods_list/goods_list?pageType=more&navbarTitle='+item.movieType
 				})
-				switch(item.name){
-					case '分类':
-						// uni.switchTab({
-						// 	url:'/pages/cate/cate'
-						// })
-						break
-				}
 			}
 		}
 	}

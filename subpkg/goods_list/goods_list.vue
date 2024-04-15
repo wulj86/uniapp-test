@@ -1,4 +1,9 @@
 <template>
+	<page-meta>
+	    <navigation-bar
+	      :title="navbarTitle"
+	    />
+	  </page-meta>
 	<view>
 		<uni-icons type="up" size="40" class="upicon" color="#ffa115" @click="goToTop"></uni-icons>
 		<my-goods :goods="goodsList"></my-goods>
@@ -17,13 +22,28 @@
 				},
 				goodsList:[],
 				isLoading:false,
-				total:0
+				total:0,
+				navbarTitle:''
 			};
 		},
 		onLoad(options){
-			console.log(options)
-			this.queryObj.query=options.query || ''
-			this.queryObj.cid=options.cid||''
+			console.log(options.pageType)
+			switch (options.pageType){
+				case 'more':
+					this.navbarTitle='更多'+options.navbarTitle
+					break;
+				case 'cate':
+					this.navbarTitle=options.navbarTitle
+					break;
+				case 'like':
+					this.navbarTitle='想看的影片'
+					break;
+				case 'read':
+					this.navbarTitle='看过的影片'
+					break;
+				default:
+					break;
+			}
 			this.getGoodsList()
 		},
 		onReachBottom(){
@@ -42,7 +62,7 @@
 		methods:{
 			async getGoodsList(cb){
 				this.isLoading=true
-				let {data:res} = await uni.$http.get(`/goods/search`,this.queryObj)
+				let {data:res} = await uni.$http.get(`/v1/goods/search`,this.queryObj)
 				if(res.meta.status!=200)return uni.$showMsg()
 				res.message.goods.forEach(e=>e.image_src=e.goods_big_logo)
 				this.goodsList=[...this.goodsList,...res.message.goods]
