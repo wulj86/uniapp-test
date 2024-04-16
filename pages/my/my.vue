@@ -6,10 +6,8 @@
 </template>
 
 <script>
-	import badgeMix from '../../mixins/tabBar-badge.js'
 	import { mapState} from 'vuex'
  	export default {
-		mixins:[badgeMix],
 		data() {
 			return {
 				

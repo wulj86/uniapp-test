@@ -1,17 +1,17 @@
 <template>
 	<page-meta>
 	    <navigation-bar
-	      :title="movie.title"
+	      :title="movie.movie_name"
 	    />
 	  </page-meta>
 	<view class="container">
 		<view class="top">
 			<img :src="movie.img_src" alt="图片" class="top-left">
 			<view class="top-right">
-				<view style="font-size: 38rpx;font-weight: 400;letter-spacing: 4rpx;">{{movie.title}}</view>
+				<view style="font-size: 38rpx;font-weight: 400;letter-spacing: 4rpx;">{{movie.movie_name}}</view>
 				<view style="color: #ff5722;">导演：{{movie.director}}</view>
 				<view style="color: #9E9E9E;">
-					{{movie.movieType.join('/')}}—{{movie.address.join('/')}}
+					{{movie.movie_type_name}}—{{movie.address}}
 				</view>
 				<view class="bottom">
 					<uni-fav :checked="movie.collected" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
@@ -34,9 +34,9 @@
 		<view style="margin-top:20rpx;">
 			<view class="group">简介</view>
 			<view class="intro-ellipsis" v-if="showEllipsis">
-				{{movie.movieIntroduction}}
+				{{movie.introduction}}
 			</view>
-			<rich-text :nodes="movie.movieIntroduction" v-else style="letter-spacing: 4rpx;"></rich-text>
+			<rich-text :nodes="movie.introduction" v-else style="letter-spacing: 4rpx;"></rich-text>
 			<view class="unilink" @click="showEllipsis=!showEllipsis">查看更多</view>
 		</view>
 		<view>
@@ -54,12 +54,13 @@
 				<view class="comments">
 					<view class="left">
 						<img src="/static/cart.png" alt="头像" class="avatar">
-						<text>{{item.account}}</text>
+						<text>{{item.user_account}}</text>
 					</view>
-					<text style="color:#9E9E9E">{{item.date}}</text>
+					<text style="color:#9E9E9E">{{item.create_time}}</text>
 				</view>
 				<rich-text :nodes="item.content"style="letter-spacing: 4rpx;"></rich-text>
 			</view>
+			<view class="unilink" @click="getMoreComments" v-if='showCommentsMoreBtn'>查看更多</view>
 		</view>
 		<uni-popup ref="popup" background-color="#fff" type="bottom">
 			<view style="padding: 20rpx;font-size: 28rpx;letter-spacing: 2rpx;">
@@ -74,71 +75,98 @@
 </template>
 
 <script>
-// 	import { mapState,mapMutations,mapGetters } from 'vuex'
+	import { mapState } from 'vuex'
 	export default {
-		// computed:{
-		// 	...mapState('m_cart',[]),
-		// 	...mapGetters('m_cart',['total'])
-		// },
 		data() {
 			return {
 					showEllipsis:true,//展示简介
 					movie:{
-						img_src:'/static/jomoo.png',
-						title:'杀死比尔分公司分公司',//电影名称
-						director:'胜多负少',//导演
-						movieType:['动作','喜剧'],
-						address:['中国大陆','中国香港'],
-						score:'4.7',
-						actor:['赵丽颖','林更新','今晨','严宽'],
-						collected:true,//想看
+						movie_id:'',
+						img_src:'',
+						movie_name:'',//电影名称
+						director:'',//导演
+						movie_type_name:'',
+						address:'',
+						score:'',
+						actor:'',
+						collected:false,//想看
 						read:false,//看过
-						movieIntroduction:`更丰富付付付付法定公司法告诉对方告诉对方告诉对方告诉告诉对方
-						付付付付付规划的规划基督教，付付付付付规划的规划基督教，付付付付付规划的规划基督教，付付付付付规划的规划基督教
-						对方告诉对方告诉对方告诉对方。对方告诉对方告诉对方公司的风格。更丰富付付付付法定公司法告诉对方告诉对方告诉对方告诉告诉对方
-						付付付付付规划的规划基督教，付付付付付规划的规划基督教，付付付付付规划的规划基督教，付付付付付规划的规划基督教
-						对方告诉对方告诉对方告诉对方。对方告诉对方告诉对方公司的风格。更丰富付付付付法定公司法告诉对方告诉对方告诉对方告诉告诉对方
-						付付付付付规划的规划基督教，付付付付付规划的规划基督教，付付付付付规划的规划基督教，付付付付付规划的规划基督教
-						对方告诉对方告诉对方告诉对方。对方告诉对方告诉对方公司的风格。`,//电影介绍
+						introduction:``,//电影介绍
 					},
 					comments:[//评论内容数据
-						{
-							account:'水电费',
-							date:'2024-04-05',
-							content:'分隔符过多所所所所所所所所所所所所所所所所所付噶奥奥噶多付噶付'
-						},
-						{
-							account:'分隔符',
-							date:'2024-04-05',
-							content:'方同意退货还有分公司'
-						},
-						{
-							account:'会更好',
-							date:'2024-04-05',
-							content:'双方告诉对方告诉对方告诉对方公司分公司的风格'
-						},
-					],
+						],
 					comment:'',//添加评论内容
+					page:1,//评论内容分页
+					size:10,
+					total:0,
 				}
 		},
-		onLoad(options){
+		computed:{
+			...mapState('m_user',['userinfo','token']),
+			showCommentsMoreBtn(){
+				return this.page*this.size < this.total
+			}
+		},
+		async onLoad(options){
+			console.log(options.movie_id)
+			//获取电影详情
+			let res = await uni.$http.post('/movieApi/movie/detailQuery',{movieId:options.movie_id,pageNum:this.page,retNum:this.size})
+			if(res.code!=200) return uni.$showMsg('获取数据失败')
+			this.movie=res.data
 			
+			this.getComments(options)
 		},
 		methods:{
-			// ...mapMutations('m_cart',['addToCart']),
-			favClick(num) {
-				if(num==1){
-					this.movie.collected=!this.movie.collected
-				}else{
-					this.movie.read=!this.movie.read
-				}
-				this.$forceUpdate()
+			async getComments(options){
+				//获取电影相关评论
+				let res = await uni.$http.post('/movieApi/movieComments/query',{movieId:options.movie_id})
+				if(res.code!=200) return uni.$showMsg('获取评论数据失败')
+				this.comments=[this.comments,...res.data[0]]
+				this.total=res.total
+				if(!this.showCommentsMoreBtn) return uni.$showMsg('数据加载完毕！')
 			},
-			openPopup(){
+			getMoreComments(){
+				this.page++
+				this.getComments()
+			},
+			justifyLogin(){//判断是否登录
+				if(!this.token) return false
+				return true
+			},
+			favClick(num) {//想看和看过
+				if(this.justifyLogin()){
+					if(num==1){
+						this.movie.collected=!this.movie.collected
+					}else{
+						this.movie.read=!this.movie.read
+					}
+					this.$forceUpdate()
+				}else{
+					uni.switchTab({
+						url:'/pages/my/my'
+					})
+				}
+				
+			},
+			openPopup(){//添加评论弹窗
 				this.$refs.popup.open()
 			},
-			submitComment(){
-				
+			async submitComment(){
+				if(this.justifyLogin()){
+					let obj={
+						user_name:this.userinfo.user_name,
+						user_account:this.userinfo.user_account,
+						movie_id:this.movie.movie_id,
+						content:this.comment
+					}
+					let res = await uni.$http.post('/movieApi/movieComments/add',obj)
+					if(res.code!=200) return uni.$showMsg('添加评论失败')
+					uni.$showMsg('添加评论成功')
+				}else{
+					uni.switchTab({
+						url:'/pages/my/my'
+					})
+				}
 			}
 		}
 	}

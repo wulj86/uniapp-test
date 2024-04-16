@@ -19,19 +19,13 @@
 				avatarUrl : 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 			};
 		},
-		computed:{
-			...mapState('m_user',['redirectInfo'])	
-		},
 		methods:{
-			...mapMutations('m_user',['updateUserInfo','updateToken','updateRedirectInfo']),
-			 // onChooseAvatar(e) {
-				//  console.log(e)
-			 //    this.avatarUrl = e.detail.avatarUrl 
-			 //  },//获取头像昵称
+			...mapMutations('m_user',['updateUserInfo','updateToken']),
 			getUserInfo(){
 				const that=this
-				uni.getSetting({
+				uni.getSetting({//判断用户是否已授权
 				  success(res) {
+					  console.log(res)
 				    if (!res.authSetting['scope.userInfo']) {
 				      uni.authorize({
 				        scope: 'scope.userInfo',
@@ -40,46 +34,28 @@
 				        }
 				      })
 				    }else{
-						uni.getUserProfile({
-							desc:'允许授权获取用户信息',
-							success(e) {
-								that.updateUserInfo(e.userInfo)
-								that.getToken(e)
-							}
-						})
+						uni.login({
+						  provider: 'weixin', //使用微信登录
+						  success: function (loginRes) {
+						    console.log(loginRes.authResult);
+						  }
+						});
+						// this.login()
 					}
 				  }
 				})
 			},
-			async getToken(e){
-				const [err,res] = await uni.login().catch(err=>err)
-				if(err||res.errMsg!=='login:ok') return uni.$showMsg('登录失败')
-				console.log(res.code)
-				console.log(e)
-				const query={
-					code:res.code,
-					encryptedData:e.encryptedData,
-					iv: e.iv,
-					rawData:e.rawData,
-					signature:e.signature,
-				}
-				// const {data:loginResult} =await uni.$http.post('/users/wxlogin',query)
-				// if(loginResult.meta.status!=200) return uni.$showMsg('登录失败')
+			async login(){
+				//获取微信登录凭证
+				// await uni.login().catch(err=>err)
+				
+				//登录服务器
+				let res1 = await uni.$http.post('/movieApi/userAccount/login',{userAccount:'123',weixinCode:res.code})
+				if(res1.code!=200) return uni.$showMsg('登录失败')
 				uni.$showMsg('登录成功')
+				this.updateUserInfo(res.data)
 				this.updateToken('hhhhhhhhhh')
-				this.navigateBack()
 			},
-			navigateBack(){
-				const that= this
-				if(this.redirectInfo && this.redirectInfo.openType=='switchTab'){
-					uni.switchTab({
-						url:this.redirectInfo.from,
-						complete() {
-							that.updateRedirectInfo({})
-						}
-					})
-				}
-			}
 		}
 	}
 </script>

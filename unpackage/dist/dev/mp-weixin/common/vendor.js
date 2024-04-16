@@ -2371,7 +2371,7 @@ function initData(vueOptions, context) {
     try {
       data = data.call(context); // 支持 Vue.prototype 上挂的数据
     } catch (e) {
-      if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
       }
     }
@@ -9548,7 +9548,7 @@ function type(obj) {
 
 function flushCallbacks$1(vm) {
     if (vm.__next_tick_callbacks && vm.__next_tick_callbacks.length) {
-        if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:flushCallbacks[' + vm.__next_tick_callbacks.length + ']');
@@ -9569,14 +9569,14 @@ function nextTick$1(vm, cb) {
     //1.nextTick 之前 已 setData 且 setData 还未回调完成
     //2.nextTick 之前存在 render watcher
     if (!vm.__next_tick_pending && !hasRenderWatcher(vm)) {
-        if(Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:nextVueTick');
         }
         return nextTick(cb, vm)
     }else{
-        if(Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance$1 = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance$1.is || mpInstance$1.route) + '][' + vm._uid +
                 ']:nextMPTick');
@@ -9672,7 +9672,7 @@ var patch = function(oldVnode, vnode) {
     });
     var diffData = this.$shouldDiffData === false ? data : diff(data, mpData);
     if (Object.keys(diffData).length) {
-      if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"uniapp_test","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + this._uid +
           ']差量更新',
           JSON.stringify(diffData));
@@ -10282,12 +10282,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
 var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 34));
-var _cart = _interopRequireDefault(__webpack_require__(/*! ./cart.js */ 35));
 var _user = _interopRequireDefault(__webpack_require__(/*! ./user.js */ 36));
 _vue.default.use(_vuex.default);
 var store = new _vuex.default.Store({
   modules: {
-    'm_cart': _cart.default,
     'm_user': _user.default
   }
 });
@@ -11553,109 +11551,6 @@ module.exports = index_cjs;
 
 /***/ }),
 
-/***/ 35:
-/*!*****************************************************!*\
-  !*** D:/Projects/uni-app/uniapp_test/store/cart.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  namespaced: true,
-  state: function state() {
-    return {
-      cart: JSON.parse(uni.getStorageSync('cart') || '[]')
-    };
-  },
-  mutations: {
-    addToCart: function addToCart(state, goods) {
-      var findResult = state.cart.find(function (x) {
-        return x.goods_id === goods.goods_id;
-      });
-      if (!findResult) {
-        state.cart.push(goods);
-      } else {
-        findResult.goods_count++;
-      }
-      this.commit('m_cart/saveToStorage');
-    },
-    saveToStorage: function saveToStorage(state) {
-      uni.setStorageSync('cart', JSON.stringify(state.cart));
-    },
-    updateGoodsState: function updateGoodsState(state, goods) {
-      var findResult = state.cart.find(function (x) {
-        return x.goods_id === goods.goods_id;
-      });
-      if (findResult) {
-        findResult.goods_state = goods.goods_state;
-        this.commit('m_cart/saveToStorage');
-      }
-    },
-    updateAllGoodsState: function updateAllGoodsState(state, newState) {
-      state.cart.forEach(function (x) {
-        return x.goods_state = newState;
-      });
-      this.commit('m_cart/saveToStorage');
-    },
-    updateGoodsCount: function updateGoodsCount(state, goods) {
-      var findResult = state.cart.find(function (x) {
-        return x.goods_id === goods.goods_id;
-      });
-      if (findResult) {
-        findResult.goods_count = goods.goods_count;
-        this.commit('m_cart/saveToStorage');
-      }
-    },
-    removeGoodsById: function removeGoodsById(state, goods) {
-      state.cart = state.cart.filter(function (x) {
-        return x.goods_id !== goods.goods_id;
-      });
-      this.commit('m_cart/saveToStorage');
-    },
-    clearCart: function clearCart(state) {
-      state.cart = [];
-      this.commit('m_cart/saveToStorage');
-    }
-  },
-  getters: {
-    total: function total(state) {
-      // let c = 0
-      // state.cart.forEach(x=>{
-      // 	c+=x.goods_count
-      // })
-      // return c
-      return state.cart.reduce(function (total, item) {
-        return total += item.goods_count;
-      }, 0);
-    },
-    checkedCount: function checkedCount(state) {
-      return state.cart.filter(function (x) {
-        return x.goods_state;
-      }).reduce(function (total, item) {
-        return total += item.goods_count;
-      }, 0);
-    },
-    checkedGoodsAmount: function checkedGoodsAmount(state) {
-      return state.cart.filter(function (x) {
-        return x.goods_state;
-      }).reduce(function (total, item) {
-        return total += item.goods_count * item.goods_price;
-      }, 0).toFixed(2);
-    }
-  }
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
-
 /***/ 36:
 /*!*****************************************************!*\
   !*** D:/Projects/uni-app/uniapp_test/store/user.js ***!
@@ -11674,21 +11569,11 @@ var _default = {
   namespaced: true,
   state: function state() {
     return {
-      address: JSON.parse(uni.getStorageSync('address') || '{}'),
       token: uni.getStorageSync('token') || '',
-      userinfo: JSON.parse(uni.getStorageSync('userinfo') || '{}'),
-      redirectInfo: {}
+      userinfo: JSON.parse(uni.getStorageSync('userinfo') || '{}')
     };
   },
   mutations: {
-    updateAddress: function updateAddress(state, address) {
-      console.log(address);
-      state.address = address;
-      this.commit('m_user/saveAddressToStoreage');
-    },
-    saveAddressToStoreage: function saveAddressToStoreage(state) {
-      uni.setStorageSync('address', JSON.stringify(state.address));
-    },
     updateUserInfo: function updateUserInfo(state, userinfo) {
       state.userinfo = userinfo;
       this.commit('m_user/saveUserinfoToStorage');
@@ -11702,17 +11587,9 @@ var _default = {
     },
     saveTokenToStorage: function saveTokenToStorage(state) {
       uni.setStorageSync('token', state.token);
-    },
-    updateRedirectInfo: function updateRedirectInfo(state, info) {
-      state.redirectInfo = info;
     }
   },
-  getters: {
-    addstr: function addstr(state) {
-      if (!state.address.provinceName) return '';
-      return state.address.provinceName + state.address.cityName + state.address.countyName + state.address.detailInfo;
-    }
-  }
+  getters: {}
 };
 exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
@@ -12221,49 +12098,6 @@ function _asyncToGenerator(fn) {
   };
 }
 module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 47:
-/*!**************************************************************!*\
-  !*** D:/Projects/uni-app/uniapp_test/mixins/tabBar-badge.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _vuex = __webpack_require__(/*! vuex */ 34);
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var _default = {
-  computed: _objectSpread({}, (0, _vuex.mapGetters)('m_cart', ['total'])),
-  watch: {
-    total: function total() {
-      this.setBadge();
-    }
-  },
-  onShow: function onShow() {
-    this.setBadge();
-  },
-  methods: {
-    setBadge: function setBadge() {
-      uni.setTabBarBadge({
-        index: 2,
-        text: this.total + ''
-      });
-    }
-  }
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
 

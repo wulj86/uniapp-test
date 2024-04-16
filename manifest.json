@@ -83,17 +83,13 @@
             "port" : 8080,
             "disableHostCheck" : true,
             "proxy" : {
-                "/movie" : {
+                "/movieApi" : {
                     "target" : "http://127.0.0.1:18080",
                     "changeOrigin" : true,
                     "pathRewrite" : {
-                        "^/movie" : ""
+                        "^/movieApi" : ""
                     }
-                },
-				"/v1" : {
-				    "target" : "https://api-hmugo-web.itheima.net/api/public",
-				    "changeOrigin" : true
-				}
+                }
             }
         }
     }

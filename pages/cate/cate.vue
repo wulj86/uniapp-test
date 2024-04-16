@@ -3,19 +3,19 @@
 		<swiper circular :indicator-dots="true" autoplay :interval="4000"
 			:duration="1000">
 			<swiper-item v-for="(item,index) in swiperList" :key='index'>
-				<navigator  :url="'/subpkg/goods_details/goods_details?goods_id='+item.goods_id" class="navigator">
+				<navigator  :url="'/subpkg/goods_details/goods_details?goods_id='+item.movie_id" class="navigator">
 					<img :src="item.img_src">
 				</navigator>
 			</swiper-item>
 		</swiper>
 		<view class="category">
-			<navigator  :url="'/subpkg/goods_list/goods_list?pageType=cate&navbarTitle='+cate.movieType" class="navigator" v-for="(cate,i) in cateList" :key="i">
+			<navigator  :url="'/subpkg/goods_list/goods_list?pageType=cate&navbarTitle='+cate.rank_type_name" class="navigator" v-for="(cate,i) in cateList" :key="i">
 				<uni-card margin="15" shadow="3px 0px 3px 1px rgba(0, 0, 0, 0.08)" >
 					<view class="uni-body">
 						<img :src="cate.img_src" class="swiperImg">
 						<view class="right">
-							<view v-for="(goods,i2) in cate.goodsList" :key="i2" class="item">
-								<view class="name">{{i2+1}}、{{goods.movieName}}分</view><text class="score">{{goods.movieScore}}</text>
+							<view v-for="(movie,i2) in cate.movieList" :key="i2" class="item">
+								<view class="name">{{i2+1}}、{{movie.movie_name}}分</view><text class="score">{{movie.score}}</text>
 							</view>
 						</view>
 					</view>
@@ -29,85 +29,42 @@
 	export default {
 		data() {
 			return {
-				swiperList:[//轮播图
-					{
-						goods_id:'1',
-						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor01_2@2x.png'
-					},
-					{
-						goods_id:'2',
-						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor02_2@2x.png'
-					},
-					{
-						goods_id:'3',
-						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor03_2@2x.png'
-					},
-				],
-				cateList:[//榜单分类
-					{
-						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor01_2@2x.png',
-						navbarTitle:'top100',
-						goodsList:[
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔杀死比尔杀死杀死比尔杀死比尔杀死比尔杀死比尔'
-							},
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔 dfgfds dgdfg dfgdf fgdfg dgdfg gdfg'
-							},
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔fghdfghdfghfghfghd fhdfgh'
-							},
-						]
-					},
-					{
-						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor02_2@2x.png',
-						navbarTitle:'华语口碑高分榜',
-						goodsList:[
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔杀死比尔杀死杀死比尔杀死比尔杀死比尔杀死比尔'
-							},
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔'
-							},
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔'
-							},
-						]
-					},
-					{
-						img_src:'https://api-hmugo-web.itheima.net/pyg/pic_floor03_2@2x.png',
-						navbarTitle:'全球口碑高分榜',
-						goodsList:[
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔'
-							},
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔'
-							},
-							{
-								movieScore:'5.3',
-								movieName:'杀死比尔'
-							},
-						]
-					},
-				]
-			};
+				swiperList:[],//轮播图
+				cateList:[]//榜单分类
+				};
 		},
 		onLoad(){
-			
+			this.getCateList()
 		},
 		methods:{
-			async getCateList(){
-				
+			async getCateType(){
+				let res = await uni.$http.post('/movieApi/movieRank/query')
+				if(res.code!=200)return uni.$showMsg()
+				if(res.data && res.data.length>0){
+					res.data.forEach(e=>{
+						this.getCateList(e)
+					})
+				}
 			},
+			async getCateList(e){
+				let res1 = await uni.$http.post('/movieApi/movieRank/queryMovie',{rankType:e.rank_type,pageNum:1,retNum:3})
+				if(e.rank_type==4){
+					this.swiperList.push(res1.data)
+					return
+				}
+				switch (e.rank_type){
+					case 1:
+						e.img_src='/static/top250.png'
+						break;
+					case 2:
+						e.img_src='/static/top250.png'
+						break;
+					default:
+						e.img_src='/static/top250.png'
+						break;
+				}
+				this.cateList.push({...e,data:res1.data})
+			}
 		}
 	}
 </script>

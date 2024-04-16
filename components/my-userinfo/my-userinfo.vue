@@ -39,7 +39,6 @@
 </template>
 
 <script>
-	import {mapState,mapMutations} from 'vuex'
 	export default {
 		name:"my-userinfo",
 		data() {
@@ -47,22 +46,17 @@
 				
 			};
 		},
-		computed:{
-			...mapState('m_user',['userinfo']),
-		},
 		methods:{
-			...mapMutations('m_user',['updateAddress','updateUserInfo','updateToken']),
 			async logOut(){
 				const [err,succ] =await uni.showModal({
 					title:'提示',
 					content:'确认退出登录吗',
 				}).catch(err=>err)
 				if(succ && succ.confirm){
-					this.updateAddress({})
 					this.updateUserInfo({})
 					this.updateToken('')
 				}
-			}
+			},
 		}
 	}
 </script>

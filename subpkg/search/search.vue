@@ -11,9 +11,9 @@
 		<view class="sugg-list" v-show='searchResults.length>0'>
 			<view class="sugg-item" @click="gotoDetail(item)" v-for='(item,i) in searchResults' :key='i'>
 				<view class="left">
-					<img src="https://api-hmugo-web.itheima.net/pyg/pic_floor02_2@2x.png" alt="图片" class="searchImg" />
+					<img :src="item.img_src" alt="图片" class="searchImg" />
 					<view class="detail">
-						<view class="goods-name">{{item.goods_name}}</view>
+						<view class="goods-name">{{item.movie_name}}</view>
 						<uni-rate allow-half readonly :value="item.score/2" :size="12"/>
 					</view>
 				</view>
@@ -51,9 +51,9 @@
 		},
 		methods:{
 			search(e){
+				this.keyWord=e
 				clearTimeout(this.timer)
 				this.timer=setTimeout(()=>{
-					this.keyWord=e
 					this.getSearchList()
 				},500)
 			},
@@ -62,13 +62,13 @@
 				
 				if(!this.historyList.includes(this.keyWord)) this.historyList.unshift(this.keyWord)
 				uni.setStorageSync('kw',this.historyList.toString())
-				let {data:res} = await uni.$http.get(`/v1/goods/qsearch?query=${this.keyWord}`)
-				if(res.meta.status!=200)return uni.$showMsg()
-				this.searchResults=res.message?res.message:[]
+				let res = await uni.$http.post(`/movieApi/movie/fuzzyQquery`,{queryParam:this.keyWord,pageNum:1,retNum:15})
+				if(res.code!=200)return uni.$showMsg()
+				this.searchResults=res.data
 			},
 			gotoDetail(item){
 				uni.navigateTo({
-					url:`../goods_details/goods_details?movieId=${item.movieId}`
+					url:`../goods_details/goods_details?movieId=${item.movie_id}`
 				})
 			},
 			clean(){

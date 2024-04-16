@@ -6,68 +6,80 @@
 	  </page-meta>
 	<view>
 		<uni-icons type="up" size="40" class="upicon" color="#ffa115" @click="goToTop"></uni-icons>
-		<my-goods :goods="goodsList"></my-goods>
+		<my-goods :datas="movieList"></my-goods>
 	</view>
 </template>
 
 <script>
+	import { mapState } from 'vuex'
 	export default {
 		data() {
 			return {
 				queryObj:{
-					query:'',
-					cid:'',
-					pagenum:1,
-					pagesize:30,
+					pageNum:1,
+					retNum:10,
 				},
-				goodsList:[],
-				isLoading:false,
+				url:'',//查询接口
 				total:0,
-				navbarTitle:''
+				movieList:[],
+				isLoading:false,
+				navbarTitle:'',
+				pageType:'more',//页面类型(查看更多、榜单、想看、看过)
+				params:'1',//影片类型、榜单类型
 			};
+		},
+		computed:{
+			...mapState('m_user',['userinfo']),
 		},
 		onLoad(options){
 			console.log(options.pageType)
-			switch (options.pageType){
+			this.pageType=options.pageType
+
+			switch (this.pageType){
 				case 'more':
-					this.navbarTitle='更多'+options.navbarTitle
+				this.navbarTitle='更多'+options.navbarTitle
+					url='/movieApi/movie/detailQuery'
+					this.queryObj.movieType=this.params
 					break;
 				case 'cate':
 					this.navbarTitle=options.navbarTitle
+					url='/movieApi/movieRank/queryMovie'
+					this.queryObj.rankType=this.params
 					break;
 				case 'like':
 					this.navbarTitle='想看的影片'
+					url='/movieApi/userMoviePreferences/queryLikes'
+					this.queryObj.userAccount=this.userinfo.user_account
 					break;
 				case 'read':
 					this.navbarTitle='看过的影片'
-					break;
-				default:
+					this.url='/movieApi/userMoviePreferences/queryReads'
+					this.queryObj.userAccount=this.userinfo.user_account
 					break;
 			}
-			this.getGoodsList()
+			this.getMovieList()
 		},
 		onReachBottom(){
-			if(this.queryObj.pagenum*this.queryObj.pagesize >= this.total) return uni.$showMsg('数据加载完毕！')
+			if(this.queryObj.pageNum*this.queryObj.retNum >= this.total) return uni.$showMsg('数据加载完毕！')
 			if(this.isLoading) return
-			this.queryObj.pagenum++
-			this.getGoodsList()
+			this.queryObj.pageNum++
+			this.getMovieList()
 		},
 		onPullDownRefresh(){
-			this.queryObj.pagenum=1
+			this.queryObj.pageNum=1
 			this.isLoading=false
-			this.goodsList=[]
+			this.movieList=[]
 			this.total=0
-			this.getGoodsList(()=>uni.stopPullDownRefresh())
+			this.getMovieList(()=>uni.stopPullDownRefresh())
 		},
 		methods:{
-			async getGoodsList(cb){
+			async getMovieList(cb){
 				this.isLoading=true
-				let {data:res} = await uni.$http.get(`/v1/goods/search`,this.queryObj)
-				if(res.meta.status!=200)return uni.$showMsg()
-				res.message.goods.forEach(e=>e.image_src=e.goods_big_logo)
-				this.goodsList=[...this.goodsList,...res.message.goods]
+				let res = await uni.$http.post(this.url,this.queryObj)
+				if(res.code!=200)return uni.$showMsg()
+				this.movieList=[...this.movieList,...res.data]
 				this.isLoading=false
-				this.total=res.message.total
+				this.total=res.total
 				cb && cb()
 			},
 			goToTop() {
