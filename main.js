@@ -24,7 +24,7 @@ $http.beforeRequest=(options)=>{
 	uni.showLoading({
 		title:'数据加载中...'
 	})
-	if(options.url.includes('/my/')){
+	if(options.url.includes('/movie/detailQuery')){
 		options.header={
 			Authorization:store.state.m_user.token
 		}
