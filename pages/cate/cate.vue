@@ -3,19 +3,19 @@
 		<swiper circular :indicator-dots="true" autoplay :interval="4000"
 			:duration="1000">
 			<swiper-item v-for="(item,index) in swiperList" :key='index'>
-				<navigator  :url="'/subpkg/goods_details/goods_details?goods_id='+item.movie_id" class="navigator">
-					<img :src="item.img_src">
+				<navigator  :url="'/subpkg/goods_details/goods_details?movie_id='+item.movie_id" class="navigator">
+					<img :src="baseUrl+item.img_src" style="width: 100%;height: 100%;">
 				</navigator>
 			</swiper-item>
 		</swiper>
 		<view class="category">
-			<navigator  :url="'/subpkg/goods_list/goods_list?pageType=cate&navbarTitle='+cate.rank_type_name" class="navigator" v-for="(cate,i) in cateList" :key="i">
+			<navigator :url="'/subpkg/goods_list/goods_list?pageType=cate&navbarTitle='+cate.rank_type_name+'&params='+cate.rank_type" class="navigator" v-for="(cate,i) in cateList" :key="i">
 				<uni-card margin="15" shadow="3px 0px 3px 1px rgba(0, 0, 0, 0.08)" >
 					<view class="uni-body">
 						<img :src="cate.img_src" class="swiperImg">
 						<view class="right">
-							<view v-for="(movie,i2) in cate.movieList" :key="i2" class="item">
-								<view class="name">{{i2+1}}、{{movie.movie_name}}分</view><text class="score">{{movie.score}}</text>
+							<view v-for="(movie,i2) in cate.data" :key="i2" class="item">
+								<view class="name">{{i2+1}}、{{movie.movie_name}}</view><text class="score">{{movie.score}}分</text>
 							</view>
 						</view>
 					</view>
@@ -30,15 +30,17 @@
 		data() {
 			return {
 				swiperList:[],//轮播图
-				cateList:[]//榜单分类
+				cateList:[],//榜单分类
+				baseUrl:''
 				};
 		},
 		onLoad(){
-			this.getCateList()
+			this.baseUrl=this.$store.state.m_user.imgBaseUrl
+			this.getCateType()
 		},
 		methods:{
 			async getCateType(){
-				let res = await uni.$http.post('/movieApi/movieRank/query')
+				let {data:res} = await uni.$http.post('/movieApi/movieRank/query')
 				if(res.code!=200)return uni.$showMsg()
 				if(res.data && res.data.length>0){
 					res.data.forEach(e=>{
@@ -47,9 +49,9 @@
 				}
 			},
 			async getCateList(e){
-				let res1 = await uni.$http.post('/movieApi/movieRank/queryMovie',{rankType:e.rank_type,pageNum:1,retNum:3})
+				let {data:res1} = await uni.$http.post('/movieApi/movieRank/queryMovie',{rankType:e.rank_type,pageNum:1,retNum:3})
 				if(e.rank_type==4){
-					this.swiperList.push(res1.data)
+					this.swiperList=res1.data
 					return
 				}
 				switch (e.rank_type){
@@ -96,9 +98,9 @@
 					margin-left:10px;
 					display: flex;
 					flex-direction: column;
-					justify-content: center;
+					justify-content: space-evenly;
 					align-items: end;
-					padding: 10px;
+					padding: 0 10px;
 					.item{
 						width:100%;
 						display: flex;

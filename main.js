@@ -17,13 +17,16 @@ uni.$http = $http
 // https://www.showdoc.com.cn/128719739414963/2513235043485226  本项目所有接口地址
 //小程序不存在跨域问题，所以要请求完整路径
 // #ifndef H5
-$http.baseUrl='https://api-hmugo-web.itheima.net/api/public'
+$http.baseUrl='http://127.0.0.1:18080'
 // #endif
 	
 $http.beforeRequest=(options)=>{
 	uni.showLoading({
 		title:'数据加载中...'
 	})
+	// #ifndef H5
+	options.url=options.url.replace('/movieApi','')
+	// #endif
 	if(options.url.includes('/movie/detailQuery')){
 		options.header={
 			Authorization:store.state.m_user.token

@@ -24,31 +24,31 @@
 				movieList:[],
 				isLoading:false,
 				navbarTitle:'',
-				pageType:'more',//页面类型(查看更多、榜单、想看、看过)
-				params:'1',//影片类型、榜单类型
+				
 			};
 		},
 		computed:{
 			...mapState('m_user',['userinfo']),
 		},
 		onLoad(options){
+			//页面类型(查看更多、榜单、想看、看过)
+			//影片类型、榜单类型
 			console.log(options.pageType)
 			this.pageType=options.pageType
-
-			switch (this.pageType){
+			switch (options.pageType){
 				case 'more':
-				this.navbarTitle='更多'+options.navbarTitle
-					url='/movieApi/movie/detailQuery'
-					this.queryObj.movieType=this.params
+				this.navbarTitle='更多'+options.navbarTitle+'影片'
+					this.url='/movieApi/movie/detailQuery'
+					this.queryObj.movieType=options.params
 					break;
 				case 'cate':
-					this.navbarTitle=options.navbarTitle
-					url='/movieApi/movieRank/queryMovie'
-					this.queryObj.rankType=this.params
+					this.navbarTitle=options.navbarTitle+'影片'
+					this.url='/movieApi/movieRank/queryMovie'
+					this.queryObj.rankType=options.params
 					break;
 				case 'like':
 					this.navbarTitle='想看的影片'
-					url='/movieApi/userMoviePreferences/queryLikes'
+					this.url='/movieApi/userMoviePreferences/queryLikes'
 					this.queryObj.userAccount=this.userinfo.user_account
 					break;
 				case 'read':
@@ -75,7 +75,7 @@
 		methods:{
 			async getMovieList(cb){
 				this.isLoading=true
-				let res = await uni.$http.post(this.url,this.queryObj)
+				let {data:res} = await uni.$http.post(this.url,this.queryObj)
 				if(res.code!=200)return uni.$showMsg()
 				this.movieList=[...this.movieList,...res.data]
 				this.isLoading=false

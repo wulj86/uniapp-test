@@ -62,7 +62,7 @@
 				
 				if(!this.historyList.includes(this.keyWord)) this.historyList.unshift(this.keyWord)
 				uni.setStorageSync('kw',this.historyList.toString())
-				let res = await uni.$http.post(`/movieApi/movie/fuzzyQquery`,{queryParam:this.keyWord,pageNum:1,retNum:15})
+				let {data:res} = await uni.$http.post(`/movieApi/movie/fuzzyQquery`,{queryParam:this.keyWord,pageNum:1,retNum:15})
 				if(res.code!=200)return uni.$showMsg()
 				this.searchResults=res.data
 			},

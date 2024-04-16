@@ -6,7 +6,7 @@
 	  </page-meta>
 	<view class="container">
 		<view class="top">
-			<img :src="movie.img_src" alt="图片" class="top-left">
+			<img :src="baseUrl+movie.img_src" alt="图片" class="top-left">
 			<view class="top-right">
 				<view style="font-size: 38rpx;font-weight: 400;letter-spacing: 4rpx;">{{movie.movie_name}}</view>
 				<view style="color: #ff5722;">导演：{{movie.director}}</view>
@@ -14,9 +14,9 @@
 					{{movie.movie_type_name}}—{{movie.address}}
 				</view>
 				<view class="bottom">
-					<uni-fav :checked="movie.collected" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
+					<uni-fav :checked="movie.collected==1" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
 					 class="favBtn" :content-text="{contentDefault: '想看',contentFav: '想看'}" @click="favClick(1)" />
-					<uni-fav :checked="movie.read" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
+					<uni-fav :checked="movie.read==1" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
 					 class="favBtn" :content-text="{contentDefault: '看过',contentFav: '看过'}" @click="favClick(2)" />
 				</view>
 			</view>
@@ -42,13 +42,13 @@
 		<view>
 			<view class="group">演员</view>
 			<view class="actorGroup">
-				<text class="actor" v-for='(actor,index) in movie.actor' :key='index'>{{actor}}</text>
+				<view class="actor" v-for='(actor,index) in actorData' :key='index'>{{actor}}</view>
 			</view>
 		</view>
 		<view style="margin-top: 60rpx;">
 			<view class="commonClass">
 				<view class="group">留言板</view>
-				<view class="commonClass" @click="openPopup"><uni-icons type="compose" size="18"></uni-icons><tex>评论</tex></view>
+				<view class="commonClass" @click="openPopup"><uni-icons type="compose" size="18"></uni-icons><text>评论</text></view>
 			</view>
 			<view  v-for="(item,i) in comments" :key='i' style="margin-bottom: 36rpx;">
 				<view class="comments">
@@ -89,16 +89,18 @@
 						address:'',
 						score:'',
 						actor:'',
-						collected:false,//想看
-						read:false,//看过
+						collected:0,//想看
+						read:0,//看过
 						introduction:``,//电影介绍
 					},
+					actorData:[],
 					comments:[//评论内容数据
 						],
 					comment:'',//添加评论内容
 					page:1,//评论内容分页
 					size:10,
 					total:0,
+					baseUrl:'',
 				}
 		},
 		computed:{
@@ -108,12 +110,13 @@
 			}
 		},
 		async onLoad(options){
+			this.baseUrl=this.$store.state.m_user.imgBaseUrl
 			console.log(options.movie_id)
 			//获取电影详情
-			let res = await uni.$http.post('/movieApi/movie/detailQuery',{movieId:options.movie_id,pageNum:this.page,retNum:this.size})
+			let {data:res} = await uni.$http.post('/movieApi/movie/detailQuery',{movieId:options.movie_id})
 			if(res.code!=200) return uni.$showMsg('获取数据失败')
-			this.movie=res.data
-			
+			this.movie=res.data[0]
+			this.actorData=this.movie.actor.split('/')
 			this.getComments(options)
 		},
 		methods:{
@@ -121,7 +124,7 @@
 				//获取电影相关评论
 				let res = await uni.$http.post('/movieApi/movieComments/query',{movieId:options.movie_id})
 				if(res.code!=200) return uni.$showMsg('获取评论数据失败')
-				this.comments=[this.comments,...res.data[0]]
+				this.comments=[this.comments,...res.data]
 				this.total=res.total
 				if(!this.showCommentsMoreBtn) return uni.$showMsg('数据加载完毕！')
 			},
@@ -133,11 +136,23 @@
 				if(!this.token) return false
 				return true
 			},
-			favClick(num) {//想看和看过
+			async favClick(num) {//想看和看过
 				if(this.justifyLogin()){
 					if(num==1){
+						let {data:res} = await uni.$http.post('/userMoviePreferences/addLikes',{
+							userAccount:this.userinfo.user_account,
+							movieId:this.movie.movie_id,
+							token:this.token
+						})
+						if(res.code!=200) return uni.$showMsg('网络异常！')
 						this.movie.collected=!this.movie.collected
 					}else{
+						let {data:res} = await uni.$http.post('/userMoviePreferences/queryReads',{
+							userAccount:this.userinfo.user_account,
+							movieId:this.movie.movie_id,
+							token:this.token
+						})
+						if(res.code!=200) return uni.$showMsg('网络异常！')
 						this.movie.read=!this.movie.read
 					}
 					this.$forceUpdate()
@@ -149,24 +164,24 @@
 				
 			},
 			openPopup(){//添加评论弹窗
-				this.$refs.popup.open()
-			},
-			async submitComment(){
 				if(this.justifyLogin()){
-					let obj={
-						user_name:this.userinfo.user_name,
-						user_account:this.userinfo.user_account,
-						movie_id:this.movie.movie_id,
-						content:this.comment
-					}
-					let res = await uni.$http.post('/movieApi/movieComments/add',obj)
-					if(res.code!=200) return uni.$showMsg('添加评论失败')
-					uni.$showMsg('添加评论成功')
+					this.$refs.popup.open()
 				}else{
 					uni.switchTab({
 						url:'/pages/my/my'
 					})
 				}
+			},
+			async submitComment(){
+				let obj={
+					user_name:this.userinfo.user_name,
+					user_account:this.userinfo.user_account,
+					movie_id:this.movie.movie_id,
+					content:this.comment
+				}
+				let res = await uni.$http.post('/movieApi/movieComments/add',obj)
+				if(res.code!=200) return uni.$showMsg('添加评论失败')
+				uni.$showMsg('添加评论成功')
 			}
 		}
 	}
@@ -241,6 +256,7 @@
 			border-radius: 10rpx;
 			color: white;
 			font-size: 30rpx;
+			display: inline-block;
 		}
 	}
 	.comments{

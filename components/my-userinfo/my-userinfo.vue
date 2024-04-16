@@ -1,9 +1,9 @@
 <template>
 	<view class="my-userinfo-container">
 		<view class="top-box">
-			<img :src="userinfo.avatarUrl" class='avatar' alt="">
+			<img src="https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0" class='avatar' alt="">
 			<view class="nickname">
-				{{userinfo.nickName}}
+				{{userinfo.user_name}}
 			</view>
 		</view>
 		
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+	import { mapMutations,mapState } from 'vuex'
 	export default {
 		name:"my-userinfo",
 		data() {
@@ -46,13 +47,19 @@
 				
 			};
 		},
+		computed:{
+			...mapState('m_user',['userinfo']),
+		},
 		methods:{
+			...mapMutations('m_user',['updateUserInfo','updateToken']),
 			async logOut(){
 				const [err,succ] =await uni.showModal({
 					title:'提示',
 					content:'确认退出登录吗',
 				}).catch(err=>err)
 				if(succ && succ.confirm){
+					let {data:res1} = await uni.$http.post('/movieApi/userAccount/logout',{userAccount:'123'})
+					if(res1.code!=200) return
 					this.updateUserInfo({})
 					this.updateToken('')
 				}
