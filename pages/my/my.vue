@@ -1,7 +1,7 @@
 <template>
 	<view class="my-container">
 		<my-login v-if="!token"></my-login>
-		<my-userinfo v-else></my-userinfo>
+		<my-userinfo ref='userInfo' v-else></my-userinfo>
 	</view>
 </template>
 
@@ -15,6 +15,9 @@
 		},
 		computed:{
 			...mapState('m_user',['token'])
+		},
+		onShow() {
+			this.$refs.userInfo?.getData()
 		}
 	}
 </script>

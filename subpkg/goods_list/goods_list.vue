@@ -4,7 +4,7 @@
 	      :title="navbarTitle"
 	    />
 	  </page-meta>
-	<view>
+	<view style="margin-top:20rpx">
 		<uni-icons type="up" size="40" class="upicon" color="#ffa115" @click="goToTop"></uni-icons>
 		<my-goods :datas="movieList"></my-goods>
 	</view>
@@ -49,12 +49,12 @@
 				case 'like':
 					this.navbarTitle='想看的影片'
 					this.url='/movieApi/userMoviePreferences/queryLikes'
-					this.queryObj.userAccount=this.userinfo.user_account
+					this.queryObj.userAccount=this.userinfo.userAccount
 					break;
 				case 'read':
 					this.navbarTitle='看过的影片'
 					this.url='/movieApi/userMoviePreferences/queryReads'
-					this.queryObj.userAccount=this.userinfo.user_account
+					this.queryObj.userAccount=this.userinfo.userAccount
 					break;
 			}
 			this.getMovieList()

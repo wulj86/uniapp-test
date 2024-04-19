@@ -1,9 +1,9 @@
 <template>
 	<view class="my-userinfo-container">
 		<view class="top-box">
-			<img src="https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0" class='avatar' alt="">
+			<img src="/static/avatar.png" class='avatar' alt="">
 			<view class="nickname">
-				{{userinfo.user_name}}
+				{{userinfo.userName}}
 			</view>
 		</view>
 		
@@ -12,7 +12,7 @@
 				<view class="panel-body">
 					<navigator  url="/subpkg/goods_list/goods_list?pageType=like" class="colitem">
 						<view class="panel-item">
-							<text>8</text>
+							<text>{{collected}}</text>
 							<text>想看的</text>
 						</view>
 					</navigator>
@@ -21,7 +21,7 @@
 					</view>
 					<navigator  url="/subpkg/goods_list/goods_list?pageType=read" class="colitem">
 						<view class="panel-item">
-							<text>14</text>
+							<text>{{read}}</text>
 							<text>看过的</text>
 						</view>
 					</navigator>
@@ -44,11 +44,15 @@
 		name:"my-userinfo",
 		data() {
 			return {
-				
+				collected:0,
+				read:0,
 			};
 		},
 		computed:{
 			...mapState('m_user',['userinfo']),
+		},
+		mounted(){
+				this.getData()
 		},
 		methods:{
 			...mapMutations('m_user',['updateUserInfo','updateToken']),
@@ -64,6 +68,19 @@
 					this.updateToken('')
 				}
 			},
+			async getData(){
+				let {data:res1} = await uni.$http.post('/userMoviePreferences/queryLikes',{
+					userAccount:this.userinfo.userAccount
+				})
+				if(res1.code!=200) return uni.$showMsg('网络异常！')
+				this.collected=res1.total??0
+				
+				let {data:res2} = await uni.$http.post('/userMoviePreferences/queryReads',{
+					userAccount:this.userinfo.userAccount,
+				})
+				if(res2.code!=200) return uni.$showMsg('网络异常！')
+				this.read=res2.total??0
+			}
 		}
 	}
 </script>

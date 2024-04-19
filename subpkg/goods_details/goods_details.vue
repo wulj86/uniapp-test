@@ -94,8 +94,7 @@
 						introduction:``,//电影介绍
 					},
 					actorData:[],
-					comments:[//评论内容数据
-						],
+					comments:[],//评论内容数据
 					comment:'',//添加评论内容
 					page:1,//评论内容分页
 					size:10,
@@ -111,20 +110,23 @@
 		},
 		async onLoad(options){
 			this.baseUrl=this.$store.state.m_user.imgBaseUrl
-			console.log(options.movie_id)
 			//获取电影详情
 			let {data:res} = await uni.$http.post('/movieApi/movie/detailQuery',{movieId:options.movie_id})
 			if(res.code!=200) return uni.$showMsg('获取数据失败')
 			this.movie=res.data[0]
 			this.actorData=this.movie.actor.split('/')
-			this.getComments(options)
+			this.getComments()
 		},
 		methods:{
-			async getComments(options){
+			async getComments(){
 				//获取电影相关评论
-				let res = await uni.$http.post('/movieApi/movieComments/query',{movieId:options.movie_id})
+				let {data:res} = await uni.$http.post('/movieApi/movieComments/query',{movieId:this.movie.movie_id})
 				if(res.code!=200) return uni.$showMsg('获取评论数据失败')
-				this.comments=[this.comments,...res.data]
+				if(this.page===1){
+					this.comments=[...this.comments,...res.data]
+				}else{
+					this.comments=[...res.data]
+				}
 				this.total=res.total
 				if(!this.showCommentsMoreBtn) return uni.$showMsg('数据加载完毕！')
 			},
@@ -140,15 +142,15 @@
 				if(this.justifyLogin()){
 					if(num==1){
 						let {data:res} = await uni.$http.post('/userMoviePreferences/addLikes',{
-							userAccount:this.userinfo.user_account,
+							userAccount:this.userinfo.userAccount,
 							movieId:this.movie.movie_id,
 							token:this.token
 						})
 						if(res.code!=200) return uni.$showMsg('网络异常！')
 						this.movie.collected=!this.movie.collected
 					}else{
-						let {data:res} = await uni.$http.post('/userMoviePreferences/queryReads',{
-							userAccount:this.userinfo.user_account,
+						let {data:res} = await uni.$http.post('/userMoviePreferences/addReads',{
+							userAccount:this.userinfo.userAccount,
 							movieId:this.movie.movie_id,
 							token:this.token
 						})
@@ -174,14 +176,18 @@
 			},
 			async submitComment(){
 				let obj={
-					user_name:this.userinfo.user_name,
-					user_account:this.userinfo.user_account,
-					movie_id:this.movie.movie_id,
-					content:this.comment
+					userName:this.userinfo.userName,
+					userAccount:this.userinfo.userAccount,
+					movieId:this.movie.movie_id,
+					content:this.comment,
+					token:this.token
 				}
-				let res = await uni.$http.post('/movieApi/movieComments/add',obj)
+				let {data:res} = await uni.$http.post('/movieApi/movieComments/add',obj)
 				if(res.code!=200) return uni.$showMsg('添加评论失败')
 				uni.$showMsg('添加评论成功')
+				this.page=1
+				this.getComments()
+				this.$refs.popup.close()
 			}
 		}
 	}
@@ -251,7 +257,8 @@
 		padding-top: 20rpx;
 		.actor{
 			margin-left: 10rpx;
-			padding: 30rpx 40rpx;
+			margin-bottom: 10rpx;
+			padding: 24rpx 30rpx;
 			background: #009688;
 			border-radius: 10rpx;
 			color: white;
