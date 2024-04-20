@@ -12693,7 +12693,7 @@ var _default = {
     return {
       token: uni.getStorageSync('token') || '',
       userinfo: JSON.parse(uni.getStorageSync('userinfo') || '{}'),
-      imgBaseUrl: 'http://127.0.0.1:18080'
+      imgBaseUrl: 'http://192.168.0.106:18080'
     };
   },
   mutations: {

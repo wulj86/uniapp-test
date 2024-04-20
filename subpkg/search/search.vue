@@ -103,7 +103,7 @@
 			},
 			gotoDetail(item){
 				uni.navigateTo({
-					url:`../goods_details/goods_details?movieId=${item.movie_id}`
+					url:`../goods_details/goods_details?movie_id=${item.movie_id}`
 				})
 			},
 			clean(){

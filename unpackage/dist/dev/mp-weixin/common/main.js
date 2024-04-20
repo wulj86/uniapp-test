@@ -31,7 +31,7 @@ uni.$http = _requestMiniprogram.$http;
 // https://www.showdoc.com.cn/128719739414963/2513235043485226  本项目所有接口地址
 //小程序不存在跨域问题，所以要请求完整路径
 
-_requestMiniprogram.$http.baseUrl = 'http://127.0.0.1:18080';
+_requestMiniprogram.$http.baseUrl = 'http://192.168.0.106:18080';
 _requestMiniprogram.$http.beforeRequest = function (options) {
   uni.showLoading({
     title: '数据加载中...'

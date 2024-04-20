@@ -33,13 +33,14 @@
 		</uni-card>
 		<view style="margin-top:20rpx;">
 			<view class="group">简介</view>
-			<view class="intro-ellipsis" v-if="showEllipsis">
+			<view class="intro-ellipsis" v-show="showEllipsis">
 				{{movie.introduction}}
 			</view>
-			<rich-text :nodes="movie.introduction" v-else style="letter-spacing: 4rpx;"></rich-text>
-			<view class="unilink" @click="showEllipsis=!showEllipsis">查看更多</view>
+			<rich-text :nodes="movie.introduction" v-show="!showEllipsis" style="letter-spacing: 4rpx;"></rich-text>
+			<!-- <button type="default" plain @click="">查看更多</button> -->
+			<view class="unilink" @click="showIntro">查看更多</view>
 		</view>
-		<view>
+		<view style="margin-bottom: 20rpx;">
 			<view class="group">演员</view>
 			<view class="actorGroup">
 				<view class="actor" v-for='(actor,index) in actorData' :key='index'>{{actor}}</view>
@@ -48,7 +49,7 @@
 		<view style="margin-top: 60rpx;">
 			<view class="commonClass">
 				<view class="group">留言板</view>
-				<view class="commonClass" @click="openPopup"><uni-icons type="compose" size="18"></uni-icons><text>评论</text></view>
+				<view class="commonClass" style="padding:30rpx" @click="openPopup"><uni-icons type="compose" size="26"></uni-icons><text>评论</text></view>
 			</view>
 			<view  v-for="(item,i) in comments" :key='i' style="margin-bottom: 36rpx;">
 				<view class="comments">
@@ -66,8 +67,8 @@
 			<view style="padding: 20rpx;font-size: 28rpx;letter-spacing: 2rpx;">
 				评论窗口
 			</view>
-			<uni-easyinput type="textarea" autoHeight v-model="comment" placeholder="请输入评论内容"></uni-easyinput>
-			<view style="text-align: center;margin:30rpx 0">
+			<uni-easyinput type="textarea" autoHeight v-model="comment" placeholder="请输入评论内容" :cursor-spacing='150'></uni-easyinput>
+			<view style="text-align: center;padding:40rpx 0">
 				<button class="mini-btn" type="primary" size="mini" style="width: 200rpx;" @click="submitComment">提交</button>
 			</view>
 		</uni-popup>
@@ -110,19 +111,27 @@
 		},
 		async onLoad(options){
 			this.baseUrl=this.$store.state.m_user.imgBaseUrl
+			let obj={movieId:options.movie_id}
+			if(this.justifyLogin()){
+				obj.userAccount=this.userinfo.userAccount,
+				obj.token=this.token
+			}
 			//获取电影详情
-			let {data:res} = await uni.$http.post('/movieApi/movie/detailQuery',{movieId:options.movie_id})
+			let {data:res} = await uni.$http.post('/movieApi/movie/detailQuery',obj)
 			if(res.code!=200) return uni.$showMsg('获取数据失败')
 			this.movie=res.data[0]
 			this.actorData=this.movie.actor.split('/')
 			this.getComments()
 		},
 		methods:{
+			showIntro(){
+				this.showEllipsis=!this.showEllipsis
+			},
 			async getComments(){
 				//获取电影相关评论
 				let {data:res} = await uni.$http.post('/movieApi/movieComments/query',{movieId:this.movie.movie_id})
 				if(res.code!=200) return uni.$showMsg('获取评论数据失败')
-				if(this.page===1){
+				if(this.page!==1){
 					this.comments=[...this.comments,...res.data]
 				}else{
 					this.comments=[...res.data]
@@ -239,6 +248,7 @@
 		margin:20rpx 0;
 	}
 	.unilink{
+		padding: 20rpx 0;
 		margin-top: 10rpx;
 		color:#ffa115;
 		text-align: right;
