@@ -11,9 +11,9 @@
 		<view class="sugg-list" v-show='searchResults.length>0'>
 			<view class="sugg-item" @click="gotoDetail(item)" v-for='(item,i) in searchResults' :key='i'>
 				<view class="left">
-					<img :src="baseUrl+item.img_src" alt="图片" class="searchImg" />
+					<img :src="baseUrl+item.imgSrc" alt="图片" class="searchImg" />
 					<view class="detail">
-						<view class="goods-name">{{item.movie_name}}</view>
+						<view class="goods-name">{{item.movieName}}</view>
 						<uni-rate allow-half readonly :value="item.score/2" :size="12"/>
 						<!-- <view class="actor">{{item.actor}}</view> -->
 					</view>
@@ -103,7 +103,7 @@
 			},
 			gotoDetail(item){
 				uni.navigateTo({
-					url:`../goods_details/goods_details?movie_id=${item.movie_id}`
+					url:`../goods_details/goods_details?movieId=${item.movieId}`
 				})
 			},
 			clean(){

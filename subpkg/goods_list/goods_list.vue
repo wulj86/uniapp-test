@@ -7,6 +7,7 @@
 	<view style="margin-top:20rpx">
 		<uni-icons type="up" size="40" class="upicon" color="#ffa115" @click="goToTop"></uni-icons>
 		<my-goods :datas="movieList"></my-goods>
+		<view class='none' v-if='movieList.length==0'>暂无数据，快点搜索吧！</view>
 	</view>
 </template>
 
@@ -99,5 +100,9 @@
 	right: 10rpx;
 	z-index: 999;
 }
-
+.none{
+		margin-top: 40%;
+		font-size: 20px;
+		text-align: center;
+	}
 </style>

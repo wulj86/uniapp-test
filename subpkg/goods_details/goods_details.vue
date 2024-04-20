@@ -1,23 +1,23 @@
 <template>
 	<page-meta>
 	    <navigation-bar
-	      :title="movie.movie_name"
+	      :title="movie.movieName"
 	    />
 	  </page-meta>
 	<view class="container">
 		<view class="top">
-			<img :src="baseUrl+movie.img_src" alt="图片" class="top-left">
+			<img :src="baseUrl+movie.imgSrc" alt="图片" class="top-left">
 			<view class="top-right">
-				<view style="font-size: 38rpx;font-weight: 400;letter-spacing: 4rpx;">{{movie.movie_name}}</view>
+				<view style="font-size: 38rpx;font-weight: 400;letter-spacing: 4rpx;">{{movie.movieName}}</view>
 				<view style="color: #ff5722;">导演：{{movie.director}}</view>
 				<view style="color: #9E9E9E;">
-					{{movie.movie_type_name}}—{{movie.address}}
+					{{movie.movieTypeName}}—{{movie.address}}
 				</view>
 				<view class="bottom">
 					<uni-fav :checked="movie.collected==1" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
-					 class="favBtn" :content-text="{contentDefault: '想看',contentFav: '想看'}" @click="favClick(1)" />
+					 class="favBtn" :content-text="{contentDefault: '想看',contentFav: '想看'}" @click="favClick(1,movie.collected)" />
 					<uni-fav :checked="movie.read==1" bgColor='white' fgColor='grey' bgColorChecked='white' fgColorChecked='orange'
-					 class="favBtn" :content-text="{contentDefault: '看过',contentFav: '看过'}" @click="favClick(2)" />
+					 class="favBtn" :content-text="{contentDefault: '看过',contentFav: '看过'}" @click="favClick(2,movie.read)" />
 				</view>
 			</view>
 		</view>
@@ -33,12 +33,14 @@
 		</uni-card>
 		<view style="margin-top:20rpx;">
 			<view class="group">简介</view>
-			<view class="intro-ellipsis" v-show="showEllipsis">
+			<!-- <view class="intro-ellipsis" v-show="showEllipsis">
+				{{movie.introduction}}
+			</view> -->
+			<view style="letter-spacing: 4rpx;">
 				{{movie.introduction}}
 			</view>
-			<rich-text :nodes="movie.introduction" v-show="!showEllipsis" style="letter-spacing: 4rpx;"></rich-text>
-			<!-- <button type="default" plain @click="">查看更多</button> -->
-			<view class="unilink" @click="showIntro">查看更多</view>
+			<!-- <rich-text :nodes="movie.introduction" v-show="!showEllipsis" style="letter-spacing: 4rpx;"></rich-text> -->
+			<!-- <view class="unilink" @click="showIntro">查看更多</view> -->
 		</view>
 		<view style="margin-bottom: 20rpx;">
 			<view class="group">演员</view>
@@ -49,15 +51,15 @@
 		<view style="margin-top: 60rpx;">
 			<view class="commonClass">
 				<view class="group">留言板</view>
-				<view class="commonClass" style="padding:30rpx" @click="openPopup"><uni-icons type="compose" size="26"></uni-icons><text>评论</text></view>
+				<view class="commonClass" style="padding:30rpx" @click="openPopup"><uni-icons type="compose" size="26"></uni-icons><text style="font-size: 32rpx;">评论</text></view>
 			</view>
 			<view  v-for="(item,i) in comments" :key='i' style="margin-bottom: 36rpx;">
 				<view class="comments">
 					<view class="left">
 						<img src="/static/cart.png" alt="头像" class="avatar">
-						<text>{{item.user_account}}</text>
+						<text>{{item.userAccount}}</text>
 					</view>
-					<text style="color:#9E9E9E">{{item.create_time}}</text>
+					<text style="color:#9E9E9E">{{item.createTime}}</text>
 				</view>
 				<rich-text :nodes="item.content"style="letter-spacing: 4rpx;"></rich-text>
 			</view>
@@ -82,11 +84,11 @@
 			return {
 					showEllipsis:true,//展示简介
 					movie:{
-						movie_id:'',
-						img_src:'',
-						movie_name:'',//电影名称
+						movieId:'',
+						imgSrc:'',
+						movieName:'',//电影名称
 						director:'',//导演
-						movie_type_name:'',
+						movieTypeName:'',
 						address:'',
 						score:'',
 						actor:'',
@@ -111,7 +113,7 @@
 		},
 		async onLoad(options){
 			this.baseUrl=this.$store.state.m_user.imgBaseUrl
-			let obj={movieId:options.movie_id}
+			let obj={movieId:options.movieId}
 			if(this.justifyLogin()){
 				obj.userAccount=this.userinfo.userAccount,
 				obj.token=this.token
@@ -124,12 +126,13 @@
 			this.getComments()
 		},
 		methods:{
-			showIntro(){
-				this.showEllipsis=!this.showEllipsis
-			},
+			// showIntro(){
+			// 	this.showEllipsis=!this.showEllipsis
+			// 	this.$forceUpdate()
+			// },
 			async getComments(){
 				//获取电影相关评论
-				let {data:res} = await uni.$http.post('/movieApi/movieComments/query',{movieId:this.movie.movie_id})
+				let {data:res} = await uni.$http.post('/movieApi/movieComments/query',{movieId:this.movie.movieId})
 				if(res.code!=200) return uni.$showMsg('获取评论数据失败')
 				if(this.page!==1){
 					this.comments=[...this.comments,...res.data]
@@ -147,20 +150,23 @@
 				if(!this.token) return false
 				return true
 			},
-			async favClick(num) {//想看和看过
+			async favClick(type,value) {//想看和看过
+			console.log(value)
 				if(this.justifyLogin()){
-					if(num==1){
-						let {data:res} = await uni.$http.post('/userMoviePreferences/addLikes',{
+					if(type==1){
+						let key=value!=1?'addLikes':'removeLikes'
+						let {data:res} = await uni.$http.post(`/userMoviePreferences/${key}`,{
 							userAccount:this.userinfo.userAccount,
-							movieId:this.movie.movie_id,
+							movieId:this.movie.movieId,
 							token:this.token
 						})
 						if(res.code!=200) return uni.$showMsg('网络异常！')
 						this.movie.collected=!this.movie.collected
 					}else{
-						let {data:res} = await uni.$http.post('/userMoviePreferences/addReads',{
+						let key2=value!=1?'addReads':'removeReads'
+						let {data:res} = await uni.$http.post(`/userMoviePreferences/${key2}`,{
 							userAccount:this.userinfo.userAccount,
-							movieId:this.movie.movie_id,
+							movieId:this.movie.movieId,
 							token:this.token
 						})
 						if(res.code!=200) return uni.$showMsg('网络异常！')
@@ -187,7 +193,7 @@
 				let obj={
 					userName:this.userinfo.userName,
 					userAccount:this.userinfo.userAccount,
-					movieId:this.movie.movie_id,
+					movieId:this.movie.movieId,
 					content:this.comment,
 					token:this.token
 				}
@@ -197,6 +203,7 @@
 				this.page=1
 				this.getComments()
 				this.$refs.popup.close()
+				this.comment=null
 			}
 		}
 	}
@@ -243,9 +250,9 @@
 		}
 	}
 	.group{
-		font-size: 30rpx;
+		font-size: 36rpx;
 		font-weight: bold;
-		margin:20rpx 0;
+		margin:30rpx 0;
 	}
 	.unilink{
 		padding: 20rpx 0;
